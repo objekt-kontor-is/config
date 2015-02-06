@@ -11,5 +11,9 @@ public @interface ConfigParameter {
 
     public static String FIELD_NAME = "<field.name>";
 
+    public static String NO_DESCRIPTION = "<no.description>";
+
     String value() default FIELD_NAME;
+
+    String description() default NO_DESCRIPTION;
 }

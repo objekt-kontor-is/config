@@ -9,7 +9,7 @@
 	<name>Configuration Framework</name>
 
 	<parent>
-		<groupId>de.objektkontor</groupId>
+		<groupId>de.objekt-kontor</groupId>
 		<artifactId>master-pom</artifactId>
 		<version>1</version>
 	</parent>
