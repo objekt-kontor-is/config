@@ -3,10 +3,34 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>config</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>bundle</packaging>
-	
+
 	<name>Configuration Framework</name>
+	<description>Provides annotation based mappings for values in property files to typesafe java classes</description>
+	<url>https://github.com/objekt-kontor-is/masterpom</url>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Eugen Borth</name>
+			<email>eugen.borth@objekt-kontor.de</email>
+			<organization>Objekt-Kontor IS GmbH &amp; Co KG</organization>
+			<organizationUrl>http://www.objekt-kontor.de</organizationUrl>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:git@github.com:objekt-kontor-is/config.git</connection>
+		<developerConnection>scm:git:git@github.com:objekt-kontor-is/config.git</developerConnection>
+		<url>git@github.com:objekt-kontor-is/config.git</url>
+	</scm>
 
 	<parent>
 		<groupId>de.objekt-kontor</groupId>
@@ -19,7 +43,6 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
@@ -30,7 +53,10 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<configuration>
 					<instructions>
-						<Export-Package>de.objektkontor.config</Export-Package>
+						<Export-Package>
+							de.objektkontor.config,
+							de.objektkontor.config.*
+						</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>
