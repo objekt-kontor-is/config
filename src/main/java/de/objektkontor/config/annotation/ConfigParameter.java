@@ -1,4 +1,4 @@
-package de.objektkontor.config;
+package de.objektkontor.config.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

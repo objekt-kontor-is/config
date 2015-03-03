@@ -1,6 +1,6 @@
 package de.objektkontor.config.common;
 
-import de.objektkontor.config.ConfigParameter;
+import de.objektkontor.config.annotation.ConfigParameter;
 
 public class DBConfig {
 
