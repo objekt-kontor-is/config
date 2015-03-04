@@ -171,17 +171,22 @@ public class Configuration extends AbstractBackend {
             if (loader == null)
                 loader = Configuration.class.getClassLoader();
             try (InputStream defaultBundle = loader.getResourceAsStream("default/" + name + ".properties");
-                    InputStream stageBundle = loader.getResourceAsStream("stage/" + name + ".properties");)
+                    InputStream stageBundle = loader.getResourceAsStream("stage/" + name + ".properties");
+                    InputStream rootBundle = loader.getResourceAsStream(name + ".properties");)
             {
-                if (defaultBundle == null && stageBundle == null)
+                if (defaultBundle == null && stageBundle == null && rootBundle == null)
                     log.warn("No property files found in classpath for bundle: " + name);
                 if (defaultBundle != null) {
-                    log.debug("defaultBundle " + name + " found");
+                    log.debug("default bundle " + name + " found");
                     load(defaultBundle, name);
                 }
                 if (stageBundle != null) {
-                    log.debug("stageBundle " + name + " found");
+                    log.debug("stage bundle " + name + " found");
                     load(stageBundle, name);
+                }
+                if (rootBundle != null) {
+                    log.debug("root bundle " + name + " found");
+                    load(rootBundle, name);
                 }
                 if (log.isDebugEnabled() && !properties.isEmpty()) {
                     log.debug("Loaded configuration values for bundle: " + name);

@@ -37,16 +37,6 @@ public class ConfigurationTest {
     }
 
     @Test
-    public void testStageValue() {
-        assertEquals("stage", configuration.getValue("testbundle", "defaultValue", String.class));
-    }
-
-    @Test
-    public void testStageValues() {
-        assertArrayEquals(new String[] { "stage1", "stage2", "stage3" }, configuration.getValues("testbundle", "defaultValues", String.class));
-    }
-
-    @Test
     public void testGeneralizeKeysFromBegin() {
         Configuration configuration = new Configuration(GeneralizeKeys.FROM_BEGIN);
         assertEquals("value.a.b.c", configuration.getValue("generalizekeysfrombegin1", "a.b.c", String.class));
@@ -60,5 +50,16 @@ public class ConfigurationTest {
         assertEquals("value.a.b.c", configuration.getValue("generalizekeysfromend1", "a.b.c", String.class));
         assertEquals("value.a.b", configuration.getValue("generalizekeysfromend2", "a.b.c", String.class));
         assertEquals("value.a", configuration.getValue("generalizekeysfromend3", "a.b.c", String.class));
+    }
+
+    @Test
+    public void testMergeValues() {
+        assertEquals("default", configuration.getValue("testbundle", "defaultValue", String.class));
+        assertEquals("stage", configuration.getValue("testbundle", "stageValue", String.class));
+        assertEquals("root", configuration.getValue("testbundle", "rootValue", String.class));
+        assertArrayEquals(new String[] { "default1", "default2" }, configuration.getValues("testbundle", "defaultValues", String.class));
+        assertArrayEquals(new String[] { "stage1", "stage2", "stage3" }, configuration.getValues("testbundle", "stageValues", String.class));
+        assertArrayEquals(new String[] { "root1", "root2", "root3", "root4" }, configuration.getValues("testbundle", "rootValues", String.class));
+
     }
 }
