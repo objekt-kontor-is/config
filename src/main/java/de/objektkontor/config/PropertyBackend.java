@@ -12,33 +12,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Configuration extends AbstractBackend {
+public class PropertyBackend extends AbstractConfigBackend {
 
-    private final static Logger log = LoggerFactory.getLogger(Configuration.class);
+    private final static Logger log = LoggerFactory.getLogger(PropertyBackend.class);
 
-    public enum GeneralizeKeys {
-        FROM_BEGIN, FROM_END
-    };
-
-    private final GeneralizeKeys generalizeKeys;
+    protected final ClassLoader classLoader;
 
     private final Map<String, Bundle> bundles = new ConcurrentHashMap<String, Bundle>();
 
-    public Configuration() {
-        this(null, null);
+    public PropertyBackend() {
+        this(null);
     }
 
-    public Configuration(ClassLoader classLoader) {
-        this(classLoader, null);
-    }
-
-    public Configuration(GeneralizeKeys generalizeKeys) {
-        this(null, generalizeKeys);
-    }
-
-    public Configuration(ClassLoader classLoader, GeneralizeKeys generalizeKeys) {
-        super(classLoader);
-        this.generalizeKeys = generalizeKeys;
+    public PropertyBackend(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     @Override
@@ -111,6 +98,16 @@ public class Configuration extends AbstractBackend {
         return result;
     }
 
+    @Override
+    protected void doReload() {
+        synchronized (bundles) {
+            for (String bundleName : bundles.keySet()) {
+                Bundle bundle = new Bundle(bundleName);
+                bundles.put(bundleName, bundle);
+            }
+        }
+    }
+
     private String getBundleValue(String bundleName, String key) {
         Bundle bundle = bundles.get(bundleName);
         if (bundle == null)
@@ -121,34 +118,7 @@ public class Configuration extends AbstractBackend {
                     bundles.put(bundleName, bundle);
                 }
             }
-        if (generalizeKeys == null)
-            return bundle.getProperty(key);
-        String[] parts = key.split("\\.");
-        switch (generalizeKeys) {
-        case FROM_BEGIN:
-            for (int i = 0; i < parts.length; i++) {
-                StringBuilder subkey = new StringBuilder(parts[i]);
-                for (int j = i + 1; j < parts.length; j++)
-                    subkey.append(".").append(parts[j]);
-                String value = bundle.getProperty(subkey.toString());
-                if (value != null)
-                    return value;
-            }
-            break;
-        case FROM_END:
-            for (int i = parts.length; i > 0; i--) {
-                StringBuilder subkey = new StringBuilder(parts[0]);
-                for (int j = 1; j < i; j++)
-                    subkey.append(".").append(parts[j]);
-                String value = bundle.getProperty(subkey.toString());
-                if (value != null)
-                    return value;
-            }
-            break;
-        default:
-            throw new UnsupportedOperationException();
-        }
-        return null;
+        return bundle.getProperty(key);
     }
 
     public class Bundle {
@@ -169,7 +139,7 @@ public class Configuration extends AbstractBackend {
             if (loader == null)
                 loader = Thread.currentThread().getContextClassLoader();
             if (loader == null)
-                loader = Configuration.class.getClassLoader();
+                loader = PropertyBackend.class.getClassLoader();
             try (InputStream defaultBundle = loader.getResourceAsStream("default/" + name + ".properties");
                     InputStream stageBundle = loader.getResourceAsStream("stage/" + name + ".properties");
                     InputStream rootBundle = loader.getResourceAsStream(name + ".properties");)

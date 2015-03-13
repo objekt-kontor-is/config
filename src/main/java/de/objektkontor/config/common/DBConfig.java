@@ -1,8 +1,9 @@
 package de.objektkontor.config.common;
 
+import de.objektkontor.config.ObservableConfig;
 import de.objektkontor.config.annotation.ConfigParameter;
 
-public class DBConfig {
+public class DBConfig extends ObservableConfig {
 
     @ConfigParameter
     private String driver;
