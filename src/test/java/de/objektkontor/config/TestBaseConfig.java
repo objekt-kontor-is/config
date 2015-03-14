@@ -7,10 +7,10 @@ import de.objektkontor.config.annotation.ConfigParameter;
 
 public class TestBaseConfig extends ObservableConfig {
 
-    @ConfigParameter
+    @ConfigParameter(description = "Test string value")
     private String stringValue;
 
-    @ConfigParameter
+    @ConfigParameter(description = "Test array of string values")
     private String[] stringValues;
 
     @ConfigParameter

@@ -1,5 +1,7 @@
 package de.objektkontor.config;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -11,6 +13,9 @@ import de.objektkontor.config.annotation.ConfigParameter;
 
 public class ConfigInspector {
 
+    private static final int DUMP_PARAMETER_NAME_LENGTH = 60;
+    private static final int DUMP_PARAMETER_VALUE_LENGTH = 30;
+
     public static String dump(Object config) {
         return dump(null, config);
     }
@@ -19,7 +24,7 @@ public class ConfigInspector {
         if (config == null)
             throw new IllegalArgumentException("Config to dump cannot be null");
         StringBuilder buffer = new StringBuilder();
-        doDump(prefix, config, buffer);
+        doDump(prefix, config, null, buffer);
         return buffer.toString();
     }
 
@@ -30,6 +35,13 @@ public class ConfigInspector {
         String key = prefix == null ? "" : prefix;
         key += name.length() > 0 ? key.length() > 0 ? "." + name : name : "";
         return key;
+    }
+
+    protected static String getParameterDescription(Field field) {
+        String description = field.getAnnotation(ConfigParameter.class).description();
+        if (ConfigParameter.NO_DESCRIPTION.equals(description))
+            return null;
+        return description;
     }
 
     protected static Class<?> getFieldType(Object config, Field field) {
@@ -93,9 +105,9 @@ public class ConfigInspector {
         return config instanceof ObservableConfig && ((ObservableConfig) config).hasObserver();
     }
 
-    private static void doDump(String name, Object config, StringBuilder buffer) {
+    private static void doDump(String name, Object config, String description, StringBuilder buffer) {
         if (config == null) {
-            doValueDump(name, config, buffer);
+            doValueDump(name, config, description, buffer);
             return;
         }
         Class<?> type = config.getClass();
@@ -108,25 +120,27 @@ public class ConfigInspector {
             return;
         }
         if (type.isArray()) {
-            doValueArrayDump(name, config, buffer);
+            doValueArrayDump(name, config, description, buffer);
             return;
         }
-        doValueDump(name, config, buffer);
+        doValueDump(name, config, description, buffer);
     }
 
     protected static void appendName(StringBuilder buffer, String name) {
         buffer.append("  ").append(name).append(" ");
-        if (name.length() < 60) {
-            char[] padding = new char[60 - name.length()];
+        if (name.length() < DUMP_PARAMETER_NAME_LENGTH) {
+            char[] padding = new char[DUMP_PARAMETER_NAME_LENGTH - name.length()];
             Arrays.fill(padding, '.');
             buffer.append(padding);
         }
         buffer.append(" ");
     }
 
-    private static void doValueDump(String name, Object value, StringBuilder buffer) {
+    private static void doValueDump(String name, Object value, String description, StringBuilder buffer) {
         appendName(buffer, name);
-        buffer.append(String.valueOf(value));
+        buffer.append(format("%-" + DUMP_PARAMETER_VALUE_LENGTH + "s", String.valueOf(value)));
+        if (description != null)
+            buffer.append(" - ").append(description);
         buffer.append("\n");
     }
 
@@ -134,20 +148,20 @@ public class ConfigInspector {
         for (Field field : parameterFields) {
             field.setAccessible(true);
             Object value = getFieldValue(config, field);
-            doDump(getParameterKey(name, field), value, buffer);
+            doDump(getParameterKey(name, field), value, getParameterDescription(field), buffer);
         }
     }
 
-    private static void doValueArrayDump(String name, Object array, StringBuilder buffer) {
-        appendName(buffer, name + "[]");
+    private static void doValueArrayDump(String name, Object array, String description, StringBuilder buffer) {
+        StringBuilder valuesBuffer = new StringBuilder();
         int length = Array.getLength(array);
         for (int i = 0; i < length; i ++) {
             Object value = Array.get(array, i);
             if (i > 0)
-                buffer.append(", ");
-            buffer.append(String.valueOf(value));
+                valuesBuffer.append(", ");
+            valuesBuffer.append(String.valueOf(value));
         }
-        buffer.append("\n");
+        doValueDump(name, valuesBuffer, description, buffer);
     }
 
     private static void doConfigArrayDump(String name, Object array, List<Field> parameterFields, StringBuilder buffer) {
@@ -155,7 +169,7 @@ public class ConfigInspector {
         for (int i = 0; i < length; i ++) {
             Object config = Array.get(array, i);
             if (config == null)
-                doValueDump(name + "[" + i + "]", config, buffer);
+                doValueDump(name + "[" + i + "]", config, null, buffer);
             else
                 doConfigDump(name + "[" + getConfigIndex(config, i) + "]", config, parameterFields, buffer);
         }
