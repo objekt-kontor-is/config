@@ -161,7 +161,7 @@ public class ConfigInspector {
                 valuesBuffer.append(", ");
             valuesBuffer.append(String.valueOf(value));
         }
-        doValueDump(name, valuesBuffer, description, buffer);
+        doValueDump(name + "[]", valuesBuffer, description, buffer);
     }
 
     private static void doConfigArrayDump(String name, Object array, List<Field> parameterFields, StringBuilder buffer) {

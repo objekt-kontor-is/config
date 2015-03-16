@@ -17,7 +17,7 @@ public abstract class ReloadInitiator {
 
     private final static Logger log = LoggerFactory.getLogger(ReloadInitiator.class);
 
-    public enum Policy {
+    public enum Method {
         NONE, SIGNAL, TOUCH, SOCKET, POLL
     }
 
@@ -26,7 +26,7 @@ public abstract class ReloadInitiator {
         public abstract void reloadConfiguration() throws Exception;
     }
 
-    private static final String POLICY_PARAMETER = "ConfigReloadPolicy";
+    private static final String RELOAD_METHOD_PARAMETER = "ConfigReloadMethod";
     private static final String CHECK_INTERVAL_PARAMETER = "ConfigReloadCheckInterval";
     protected static final String THREAD_NAME = "Config-Loader";
 
@@ -36,9 +36,9 @@ public abstract class ReloadInitiator {
 
     static {
         try {
-            Policy policy = getPolicy();
-            log.info("Selected Initiator Policy: " + policy);
-            instance = createInitiatorInstance(policy);
+            Method method = getMethod();
+            log.info("Selected Initiator Method: " + method);
+            instance = createInitiatorInstance(method);
         } catch (Exception e) {
             log.error("Unable to create ReloadInitiator instance", e);
             instance = new NoReloadInitiator();
@@ -91,11 +91,11 @@ public abstract class ReloadInitiator {
         return defaultValue;
     }
 
-    private static Policy getPolicy() {
-        String value = getParameter(POLICY_PARAMETER, null);
+    private static Method getMethod() {
+        String value = getParameter(RELOAD_METHOD_PARAMETER, null);
         if (value == null)
-            return Policy.NONE;
-        return Policy.valueOf(value);
+            return Method.NONE;
+        return Method.valueOf(value);
     }
 
     protected static long getCheckInterval(String defaultInterval) {
@@ -118,8 +118,8 @@ public abstract class ReloadInitiator {
         return parameterName;
     }
 
-    private static ReloadInitiator createInitiatorInstance(Policy policy) throws Exception {
-        switch (policy) {
+    private static ReloadInitiator createInitiatorInstance(Method method) throws Exception {
+        switch (method) {
         case SIGNAL:
             return new SignalReloadInitiator();
         case TOUCH:
@@ -131,9 +131,5 @@ public abstract class ReloadInitiator {
         default:
             return new NoReloadInitiator();
         }
-    }
-
-    public static void main(String... args) throws Exception {
-        Thread.sleep(600000);
     }
 }

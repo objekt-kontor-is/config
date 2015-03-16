@@ -25,7 +25,7 @@ public abstract class ObservableConfig {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    void notifyObserver(ObservableConfig newConfig, List<ConfigUpdate> updates) throws Exception {
+    protected void notifyObserver(ObservableConfig newConfig, List<ConfigUpdate> updates) throws Exception {
         if (observer == null)
             return;
         if (ConfigComparator.equals(this, newConfig))

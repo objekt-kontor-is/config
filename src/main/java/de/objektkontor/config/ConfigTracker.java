@@ -49,8 +49,7 @@ public class ConfigTracker<T> extends ConfigInspector {
     }
 
     public synchronized void updateConfigs(Modifier<T> modifier) throws Exception {
-        List<ObservableConfig> configsToUpdate = new ArrayList<>(configs.keySet());
-        for (ObservableConfig workingCopy : configsToUpdate) {
+        for (ObservableConfig workingCopy : configs.keySet()) {
             ObservableConfig sourceConfig = configs.get(workingCopy);
             T trackingData = trackingDataValues.get(workingCopy);
             sourceConfig = modifier.modify(workingCopy, sourceConfig, trackingData);
