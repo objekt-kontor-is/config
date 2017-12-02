@@ -1,5 +1,6 @@
 package de.objektkontor.config;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import de.objektkontor.config.valueparser.BooleanValueParser;
 import de.objektkontor.config.valueparser.DateValueParser;
+import de.objektkontor.config.valueparser.DurationValueParser;
 import de.objektkontor.config.valueparser.EnumValueParser;
 import de.objektkontor.config.valueparser.IntegerValueParser;
 import de.objektkontor.config.valueparser.LongValueParser;
@@ -29,8 +31,9 @@ public abstract class AbstractConfigBackend implements ConfigBackend, ReloadInit
     public void reloadConfiguration() throws Exception {
         doReload();
         synchronized (observers) {
-            for (BundleObserver observer : observers)
-                observer.bundleChanged();
+            for (BundleObserver observer : observers) {
+				observer.bundleChanged();
+			}
         }
     }
 
@@ -72,6 +75,7 @@ public abstract class AbstractConfigBackend implements ConfigBackend, ReloadInit
         parsers.put(Long.class, new LongValueParser());
         parsers.put(Date.class, new DateValueParser());
         parsers.put(Enum.class, new EnumValueParser());
+        parsers.put(Duration.class, new DurationValueParser());
         return parsers;
     }
 }
