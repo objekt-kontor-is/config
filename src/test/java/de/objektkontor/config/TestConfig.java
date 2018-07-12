@@ -18,6 +18,14 @@ public class TestConfig extends TestBaseConfig {
         return this;
     }
 
+    @Override
+    public TestConfig fill(String prefix) {
+        super.fill(prefix);
+        setSubConfig(new TestSubConfig().fill(prefix + ".subconfig"));
+        setSubConfigs(new TestSubConfig[] { new TestSubConfig().fill(prefix + ".subconfig", "id1"), new TestSubConfig().fill(prefix + ".subconfig", "id2") });
+        return this;
+    }
+
     public TestSubConfig getSubConfig() {
         return subConfig;
     }

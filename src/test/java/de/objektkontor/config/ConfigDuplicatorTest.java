@@ -91,6 +91,40 @@ public class ConfigDuplicatorTest {
         assertTrue(ConfigComparator.deepEquals(clone, source));
     }
 
+    @Test
+    public void testCompleteConfigDoesNotChangeTemplateForEmptyConfig() {
+    	TestConfig template = new TestConfig().fill();
+    	TestConfig config = new TestConfig();
+    	TestConfig result = ConfigDuplicator.completeConfig(config, template);
+    	assertTrue(ConfigComparator.deepEquals(result, template));
+    }
+
+    @Test
+    public void testCompleteConfigAppliesConfigValuesToTemplate() {
+    	TestConfig template = new TestConfig().fill();
+    	TestConfig config = new TestConfig().fill("changed");
+    	TestConfig result = ConfigDuplicator.completeConfig(config, template);
+    	assertTrue(ConfigComparator.deepEquals(result, config));
+    }
+
+    @Test
+    public void testCompleteConfigDoesNotOverwritesTemplateValuesWithDefaults() {
+    	TestConfig template = new TestConfig().fill();
+    	TestConfig config = new TestConfig().fill("changed");
+    	TestConfig reference = ConfigDuplicator.cloneConfig(config);
+    	config.setBooleanPrimitiveValue(false);
+    	config.setIntegerPrimitiveValue(0);
+    	config.setLongPrimitiveValue(0);
+    	config.getSubConfig().setBooleanPrimitiveValue(false);
+    	config.getSubConfig().setIntegerPrimitiveValue(0);
+    	config.getSubConfig().setLongPrimitiveValue(0);
+    	config.getSubConfigs()[0].setBooleanPrimitiveValue(false);
+    	config.getSubConfigs()[0].setIntegerPrimitiveValue(0);
+    	config.getSubConfigs()[0].setLongPrimitiveValue(0);
+    	TestConfig result = ConfigDuplicator.completeConfig(config, template);
+    	assertTrue(ConfigComparator.deepEquals(result, reference));
+    }
+
     private void assertConfigsEquals(boolean expectedEqualsResult, TestConfigs configs) {
         assertEquals(expectedEqualsResult, ConfigComparator.deepEquals(configs.source, configs.target));
     }
