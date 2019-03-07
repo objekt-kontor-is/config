@@ -1,4 +1,4 @@
-package de.objektkontor.config;
+package de.objektkontor.config.backend;
 
 import java.time.Duration;
 import java.util.Date;
@@ -7,6 +7,10 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import de.objektkontor.config.BundleObserver;
+import de.objektkontor.config.ConfigBackend;
+import de.objektkontor.config.ReloadInitiator;
+import de.objektkontor.config.ValueParser;
 import de.objektkontor.config.valueparser.BooleanValueParser;
 import de.objektkontor.config.valueparser.DateValueParser;
 import de.objektkontor.config.valueparser.DurationValueParser;
@@ -38,14 +42,14 @@ public abstract class AbstractConfigBackend implements ConfigBackend, ReloadInit
     }
 
     @Override
-    public void addObserver(String bundle, BundleObserver observer) {
+    public void addObserver(BundleObserver observer) {
         synchronized (observers) {
             observers.add(observer);
         }
     }
 
     @Override
-    public void removeObserver(String bundle, BundleObserver observer) {
+    public void removeObserver(BundleObserver observer) {
         synchronized (observers) {
             observers.remove(observer);
         }

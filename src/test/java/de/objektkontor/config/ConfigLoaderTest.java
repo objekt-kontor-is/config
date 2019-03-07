@@ -10,213 +10,213 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Date;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.objektkontor.config.annotation.ConfigParameter;
+import de.objektkontor.config.backend.PropertyBackend;
+import de.objektkontor.config.backend.PropertyClasspathBackend;
 
 public class ConfigLoaderTest {
 
-    private final ConfigBackend configBackend = new PropertyBackend();
-    private final ConfigLoader loader = new ConfigLoader(configBackend, "configloader");
+	private static PropertyBackend configBackend;
+	private static ConfigLoader loader;
 
-    @Test
-    public void testSupportedDataTypes() {
-        TestConfig config = loader.loadConfig(new TestConfig());
-        assertEquals("value", config.getStringValue());
-        assertEquals(Boolean.TRUE, config.getBooleanValue());
-        assertEquals(new Integer(1), config.getIntegerValue());
-        assertEquals(new Long(2), config.getLongValue());
-        assertEquals(TestBaseConfig.createTestDate(21, 11, 2014), config.getDateValue());
-        assertEquals(TestEnum.B, config.getEnumValue());
-    }
+	@BeforeClass
+	public static void setup() throws Exception {
+		configBackend = new PropertyClasspathBackend("configloader");
+		loader = new ConfigLoader(configBackend);
+	}
 
-    @Test
-    public void testSupportedArrayTypes() {
-        TestConfig config = loader.loadConfig(new TestConfig());
-        assertArrayEquals(new String[] { "value1", "value2" }, config.getStringValues());
-        assertArrayEquals(new Boolean[] { Boolean.TRUE, Boolean.FALSE }, config.getBooleanValues());
-        assertArrayEquals(new Integer[] { 1, 20, 300 }, config.getIntegerValues());
-        assertArrayEquals(new Long[] { 2l, 30l, 400l }, config.getLongValues());
-        assertArrayEquals(new Date[] { TestBaseConfig.createTestDate(21, 11, 2014), TestBaseConfig.createTestDate(22, 12, 2014) }, config.getDateValues());
-        assertArrayEquals(new TestEnum[] { TestEnum.A, TestEnum.C }, config.getEnumValues());
-    }
+	@Test
+	public void testSupportedDataTypes() {
+		TestConfig config = loader.loadConfig(new TestConfig());
+		assertEquals("value", config.getStringValue());
+		assertEquals(Boolean.TRUE, config.getBooleanValue());
+		assertEquals(new Integer(1), config.getIntegerValue());
+		assertEquals(new Long(2), config.getLongValue());
+		assertEquals(TestBaseConfig.createTestDate(21, 11, 2014), config.getDateValue());
+		assertEquals(TestEnum.B, config.getEnumValue());
+	}
 
-    @Test
-    public void testAutounboxing() {
-        TestConfig config = loader.loadConfig(new TestConfig());
-        assertTrue(config.isBooleanPrimitiveValue());
-        assertEquals(1, config.getIntegerPrimitiveValue());
-        assertEquals(2l, config.getLongPrimitiveValue());
-        assertArrayEquals(new boolean[] { true, false }, config.getBooleanPrimitiveValues());
-        assertArrayEquals(new int[] { 1, 20, 300 }, config.getIntegerPrimitiveValues());
-        assertArrayEquals(new long[] { 2l, 30l, 400l }, config.getLongPrimitiveValues());
-    }
+	@Test
+	public void testSupportedArrayTypes() {
+		TestConfig config = loader.loadConfig(new TestConfig());
+		assertArrayEquals(new String[] { "value1", "value2" }, config.getStringValues());
+		assertArrayEquals(new Boolean[] { Boolean.TRUE, Boolean.FALSE }, config.getBooleanValues());
+		assertArrayEquals(new Integer[] { 1, 20, 300 }, config.getIntegerValues());
+		assertArrayEquals(new Long[] { 2l, 30l, 400l }, config.getLongValues());
+		assertArrayEquals(new Date[] { TestBaseConfig.createTestDate(21, 11, 2014), TestBaseConfig.createTestDate(22, 12, 2014) }, config.getDateValues());
+		assertArrayEquals(new TestEnum[] { TestEnum.A, TestEnum.C }, config.getEnumValues());
+	}
 
-    @Test
-    public void testSubConfigs() {
-        TestConfig config = loader.loadConfig(new TestConfig());
-        assertEquals("value", config.getStringValue());
-        assertEquals("subconfig.value", config.getSubConfig().getStringValue());
-        assertEquals("subconfig.subconfig.value", config.getSubConfig().getSubConfig().getStringValue());
-    }
+	@Test
+	public void testAutounboxing() {
+		TestConfig config = loader.loadConfig(new TestConfig());
+		assertTrue(config.isBooleanPrimitiveValue());
+		assertEquals(1, config.getIntegerPrimitiveValue());
+		assertEquals(2l, config.getLongPrimitiveValue());
+		assertArrayEquals(new boolean[] { true, false }, config.getBooleanPrimitiveValues());
+		assertArrayEquals(new int[] { 1, 20, 300 }, config.getIntegerPrimitiveValues());
+		assertArrayEquals(new long[] { 2l, 30l, 400l }, config.getLongPrimitiveValues());
+	}
 
-    @Test
-    public void testArrayOfSubConfigs() {
-        TestConfig config = loader.loadConfig(new TestConfig());
-        assertEquals(2, config.getSubConfigs().length);
-        assertEquals("value", config.getStringValue());
-        assertEquals("first", config.getSubConfigs()[0].getId());
-        assertEquals("first.value", config.getSubConfigs()[0].getStringValue());
-        assertEquals("second", config.getSubConfigs()[1].getId());
-        assertEquals("second.value", config.getSubConfigs()[1].getStringValue());
-    }
+	@Test
+	public void testSubConfigs() {
+		TestConfig config = loader.loadConfig(new TestConfig());
+		assertEquals("value", config.getStringValue());
+		assertEquals("subconfig.value", config.getSubConfig().getStringValue());
+		assertEquals("subconfig.subconfig.value", config.getSubConfig().getSubConfig().getStringValue());
+	}
 
-    @Test
-    public void testDefaultValues() {
-        DefaultValueTestConfig config = loader.loadConfig(new DefaultValueTestConfig());
-        assertEquals("value", config.getStringValue());
-        assertEquals("default", config.getUnknownValue());
-        assertArrayEquals(new String[] { "value1", "value2" }, config.getStringValues());
-        assertArrayEquals(new String[] { "default1", "default2" }, config.getUnknownValues());
-    }
+	@Test
+	public void testArrayOfSubConfigs() {
+		TestConfig config = loader.loadConfig(new TestConfig());
+		assertEquals(2, config.getSubConfigs().length);
+		assertEquals("value", config.getStringValue());
+		assertEquals("first", config.getSubConfigs()[0].getId());
+		assertEquals("first.value", config.getSubConfigs()[0].getStringValue());
+		assertEquals("second", config.getSubConfigs()[1].getId());
+		assertEquals("second.value", config.getSubConfigs()[1].getStringValue());
+	}
 
-    @Test
-    public void testCustomPropertyNames() {
-        CustomPropertyTestConfig config = loader.loadConfig(new CustomPropertyTestConfig());
-        assertEquals("custom", config.getProperty1());
-        assertEquals("customEmptyPath", config.getProperty2().getProperty1());
-        assertEquals("customEmptyEmptyPath", config.getProperty2().getProperty2().getProperty());
-    }
+	@Test
+	public void testDefaultValues() {
+		DefaultValueTestConfig config = loader.loadConfig(new DefaultValueTestConfig());
+		assertEquals("value", config.getStringValue());
+		assertEquals("default", config.getUnknownValue());
+		assertArrayEquals(new String[] { "value1", "value2" }, config.getStringValues());
+		assertArrayEquals(new String[] { "default1", "default2" }, config.getUnknownValues());
+	}
 
-    @Test
-    public void testLoadConfigUsesTrackerIfEnabled() throws Exception {
-        ConfigLoader trackingLoader = new ConfigLoader(configBackend, "configloader", true);
-        TestConfig defaultConfig = new TestConfig();
-        defaultConfig.setStringValue("default");
-        TestConfig config = trackingLoader.loadConfig("tracker", defaultConfig);
-        assertEquals("default", config.getStringValue());
-        assertEquals("loaded", config.getSubConfig().getStringValue());
-        TestConfig origConfig = ConfigDuplicator.cloneConfig(config);
+	@Test
+	public void testCustomPropertyNames() {
+		CustomPropertyTestConfig config = loader.loadConfig(new CustomPropertyTestConfig());
+		assertEquals("custom", config.getProperty1());
+		assertEquals("customEmptyPath", config.getProperty2().getProperty1());
+		assertEquals("customEmptyEmptyPath", config.getProperty2().getProperty2().getProperty());
+	}
 
-        config.setStringValue("modified");
-        config.getSubConfig().setStringValue("modified");
-        @SuppressWarnings("unchecked")
-        ConfigObserver<TestConfig> observer = mock(ConfigObserver.class);
-        config.setObserver(observer);
+	@Test
+	public void testLoadConfigUsesTrackerIfEnabled() throws Exception {
+		ConfigLoader trackingLoader = new ConfigLoader(configBackend, true);
+		TestConfig defaultConfig = new TestConfig();
+		defaultConfig.setStringValue("default");
+		TestConfig config = trackingLoader.loadConfig("tracker", defaultConfig);
+		assertEquals("default", config.getStringValue());
+		assertEquals("loaded", config.getSubConfig().getStringValue());
+		TestConfig origConfig = ConfigDuplicator.cloneConfig(config);
 
-        trackingLoader.bundleChanged();
+		config.setStringValue("modified");
+		config.getSubConfig().setStringValue("modified");
+		@SuppressWarnings("unchecked")
+		ConfigObserver<TestConfig> observer = mock(ConfigObserver.class);
+		config.setObserver(observer);
 
-        verify(observer).reconfigure(eq(origConfig), anyListOf(ConfigUpdate.class));
-    }
+		trackingLoader.bundleChanged();
 
-    public static class DefaultValueTestConfig {
+		verify(observer).reconfigure(eq(origConfig), anyListOf(ConfigUpdate.class));
+	}
 
-        @ConfigParameter
-        private String stringValue = "default";
+	public static class DefaultValueTestConfig {
 
-        @ConfigParameter
-        private String[] stringValues = new String[] { "default1", "default2" };
+		@ConfigParameter private String stringValue = "default";
 
-        @ConfigParameter
-        private String unknownValue = "default";
+		@ConfigParameter private String[] stringValues = new String[] { "default1", "default2" };
 
-        @ConfigParameter
-        private String[] unknownValues = new String[] { "default1", "default2" };
+		@ConfigParameter private String unknownValue = "default";
 
-        public String getStringValue() {
-            return stringValue;
-        }
+		@ConfigParameter private String[] unknownValues = new String[] { "default1", "default2" };
 
-        public void setStringValue(String stringValue) {
-            this.stringValue = stringValue;
-        }
+		public String getStringValue() {
+			return stringValue;
+		}
 
-        public String[] getStringValues() {
-            return stringValues;
-        }
+		public void setStringValue(String stringValue) {
+			this.stringValue = stringValue;
+		}
 
-        public void setStringValues(String[] stringValues) {
-            this.stringValues = stringValues;
-        }
+		public String[] getStringValues() {
+			return stringValues;
+		}
 
-        public String getUnknownValue() {
-            return unknownValue;
-        }
+		public void setStringValues(String[] stringValues) {
+			this.stringValues = stringValues;
+		}
 
-        public void setUnknownValue(String unknownValue) {
-            this.unknownValue = unknownValue;
-        }
+		public String getUnknownValue() {
+			return unknownValue;
+		}
 
-        public String[] getUnknownValues() {
-            return unknownValues;
-        }
+		public void setUnknownValue(String unknownValue) {
+			this.unknownValue = unknownValue;
+		}
 
-        public void setUnknownValues(String[] unknownValues) {
-            this.unknownValues = unknownValues;
-        }
-    }
+		public String[] getUnknownValues() {
+			return unknownValues;
+		}
 
-    public static class CustomPropertyTestConfig {
+		public void setUnknownValues(String[] unknownValues) {
+			this.unknownValues = unknownValues;
+		}
+	}
 
-        @ConfigParameter("customName")
-        private String property1;
+	public static class CustomPropertyTestConfig {
 
-        @ConfigParameter("")
-        EmptySubPropertyTestConfig property2;
+		@ConfigParameter("customName") private String property1;
 
-        public String getProperty1() {
-            return property1;
-        }
+		@ConfigParameter("") EmptySubPropertyTestConfig property2;
 
-        public void setProperty1(String property1) {
-            this.property1 = property1;
-        }
+		public String getProperty1() {
+			return property1;
+		}
 
-        public EmptySubPropertyTestConfig getProperty2() {
-            return property2;
-        }
+		public void setProperty1(String property1) {
+			this.property1 = property1;
+		}
 
-        public void setProperty2(EmptySubPropertyTestConfig property2) {
-            this.property2 = property2;
-        }
-    }
+		public EmptySubPropertyTestConfig getProperty2() {
+			return property2;
+		}
 
-    public static class EmptySubPropertyTestConfig {
+		public void setProperty2(EmptySubPropertyTestConfig property2) {
+			this.property2 = property2;
+		}
+	}
 
-        @ConfigParameter("customEmptyPath")
-        private String property1;
+	public static class EmptySubPropertyTestConfig {
 
-        @ConfigParameter("")
-        EmptySubSubPropertyTestConfig property2;
+		@ConfigParameter("customEmptyPath") private String property1;
 
-        public String getProperty1() {
-            return property1;
-        }
+		@ConfigParameter("") EmptySubSubPropertyTestConfig property2;
 
-        public void setProperty1(String property1) {
-            this.property1 = property1;
-        }
+		public String getProperty1() {
+			return property1;
+		}
 
-        public EmptySubSubPropertyTestConfig getProperty2() {
-            return property2;
-        }
+		public void setProperty1(String property1) {
+			this.property1 = property1;
+		}
 
-        public void setProperty2(EmptySubSubPropertyTestConfig property2) {
-            this.property2 = property2;
-        }
-    }
+		public EmptySubSubPropertyTestConfig getProperty2() {
+			return property2;
+		}
 
-    public static class EmptySubSubPropertyTestConfig {
+		public void setProperty2(EmptySubSubPropertyTestConfig property2) {
+			this.property2 = property2;
+		}
+	}
 
-        @ConfigParameter("customEmptyEmptyPath")
-        private String property;
+	public static class EmptySubSubPropertyTestConfig {
 
-        public String getProperty() {
-            return property;
-        }
+		@ConfigParameter("customEmptyEmptyPath") private String property;
 
-        public void setProperty(String property) {
-            this.property = property;
-        }
-    }
+		public String getProperty() {
+			return property;
+		}
+
+		public void setProperty(String property) {
+			this.property = property;
+		}
+	}
 }

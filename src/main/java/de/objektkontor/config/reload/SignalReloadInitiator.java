@@ -3,11 +3,9 @@ package de.objektkontor.config.reload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.misc.Signal;
-import sun.misc.SignalHandler;
 import de.objektkontor.config.ReloadInitiator;
+import sun.misc.Signal;
 
-@SuppressWarnings("restriction")
 public class SignalReloadInitiator extends ReloadInitiator {
 
     private final static Logger log = LoggerFactory.getLogger(SignalReloadInitiator.class);
@@ -18,14 +16,12 @@ public class SignalReloadInitiator extends ReloadInitiator {
     public SignalReloadInitiator() {
         log.info("Configuring Signal Reload Initiator");
         String signal = getSignalName();
-        Signal.handle(new Signal(signal), new SignalHandler() {
-            @Override
-            public void handle(Signal signal) {
-                if (log.isDebugEnabled())
-                    log.debug("Signal received. Notifying handlers.");
-                notifyHandlers();
-            }
-        });
+        Signal.handle(new Signal(signal), signal1 -> {
+		    if (log.isDebugEnabled()) {
+				log.debug("Signal received. Notifying handlers.");
+			}
+		    notifyHandlers();
+		});
         log.info("Configuration reloading enabled. Use command <kill -s SIG" + signal + " " + getProcessId() + "> to reload configuration");
     }
 

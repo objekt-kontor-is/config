@@ -6,23 +6,23 @@ public class ValueFormatException extends RuntimeException {
 
     private static final long serialVersionUID = 253881058471256863L;
 
-    private final String bundle;
+    private final String source;
     private final String key;
 
-    public ValueFormatException(String bundle, String key, String message) {
+    public ValueFormatException(String source, String key, String message) {
         super(message);
-        this.bundle = bundle;
+        this.source = source;
         this.key = key;
     }
 
-    public ValueFormatException(String bundle, String key, Throwable cause) {
+    public ValueFormatException(String source, String key, Throwable cause) {
         super(cause);
-        this.bundle = bundle;
+        this.source = source;
         this.key = key;
     }
 
     @Override
     public String getMessage() {
-        return format("Invalid value for key '%s' in bundle '%s': " + super.getMessage(), bundle, key);
+        return format("Invalid value for key '%s' in '%s': " + super.getMessage(), source, key);
     }
 }

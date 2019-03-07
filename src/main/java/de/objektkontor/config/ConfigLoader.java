@@ -19,22 +19,19 @@ public class ConfigLoader extends ConfigInspector implements BundleObserver {
 
 	private final static Map<Class<?>, Class<?>> primitiveWrappers = createPrimitiveWrappers();
 
-	private final String bundle;
-
 	private final ConfigBackend configBackend;
 
 	private final ConfigTracker<TrackingData> configTracker;
 
-	public ConfigLoader(ConfigBackend configBackend, String bundle) {
-		this(configBackend, bundle, false);
+	public ConfigLoader(ConfigBackend configBackend) {
+		this(configBackend, false);
 	}
 
-	public ConfigLoader(ConfigBackend configBackend, String bundle, boolean enableTracking) {
+	public ConfigLoader(ConfigBackend configBackend, boolean enableTracking) {
 		this.configBackend = configBackend;
-		this.bundle = bundle;
 		if (enableTracking) {
 			configTracker = new ConfigTracker<>();
-			configBackend.addObserver(bundle, this);
+			configBackend.addObserver(this);
 		} else {
 			configTracker = null;
 		}
@@ -119,7 +116,7 @@ public class ConfigLoader extends ConfigInspector implements BundleObserver {
 		Object value = getFieldValue(config, field);
 		Class<?> elementType = field.getType().getComponentType();
 		Field identifierField = getIdentifierField(elementType);
-		Set<String> ids = configBackend.getSubconfigIds(bundle, key);
+		Set<String> ids = configBackend.getSubconfigIds(key);
 		if (value == null) {
 			value = Array.newInstance(elementType, ids.size());
 			setParameterValue(config, field, value);
@@ -150,7 +147,7 @@ public class ConfigLoader extends ConfigInspector implements BundleObserver {
 		if (type.isArray()) {
 			type = type.getComponentType();
 			Class<?> loadType = normalizeType(type);
-			Object value = configBackend.getValues(bundle, key, loadType);
+			Object value = configBackend.getValues(key, loadType);
 			if (value == null)
 				return defaultValue;
 			if (type.isPrimitive())
@@ -158,7 +155,7 @@ public class ConfigLoader extends ConfigInspector implements BundleObserver {
 			return value;
 		} else {
 			Class<?> loadType = normalizeType(type);
-			Object value = configBackend.getValue(bundle, key, loadType);
+			Object value = configBackend.getValue(key, loadType);
 			return value == null ? defaultValue : value;
 		}
 	}
