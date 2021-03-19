@@ -1,5 +1,6 @@
 package de.objektkontor.config.backend;
 
+import java.net.URL;
 import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import de.objektkontor.config.valueparser.EnumValueParser;
 import de.objektkontor.config.valueparser.IntegerValueParser;
 import de.objektkontor.config.valueparser.LongValueParser;
 import de.objektkontor.config.valueparser.StringValueParser;
+import de.objektkontor.config.valueparser.URLValueParser;
 
 public abstract class AbstractConfigBackend implements ConfigBackend, ReloadInitiator.Handler {
 
@@ -80,6 +82,7 @@ public abstract class AbstractConfigBackend implements ConfigBackend, ReloadInit
         parsers.put(Date.class, new DateValueParser());
         parsers.put(Enum.class, new EnumValueParser());
         parsers.put(Duration.class, new DurationValueParser());
+        parsers.put(URL.class, new URLValueParser());
         return parsers;
     }
 }
