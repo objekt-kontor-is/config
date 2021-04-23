@@ -1,6 +1,7 @@
 package de.objektkontor.config.backend;
 
 import java.io.InputStream;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,14 +11,24 @@ public class PropertyClasspathBackend extends PropertyBackend {
     private final static Logger log = LoggerFactory.getLogger(PropertyClasspathBackend.class);
 
     private final ClassLoader classLoader;
+    private final Properties override;
 
     public PropertyClasspathBackend(String sourceName) throws Exception {
     	this(null, sourceName);
     }
 
+    public PropertyClasspathBackend(String sourceName, Properties override) throws Exception {
+    	this(null, sourceName, override);
+    }
+
     public PropertyClasspathBackend(ClassLoader classLoader, String sourceName) throws Exception {
+    	this(classLoader, sourceName, null);
+    }
+
+    public PropertyClasspathBackend(ClassLoader classLoader, String sourceName, Properties override) throws Exception {
     	super(sourceName);
         this.classLoader = classLoader;
+        this.override = override;
         doReload();
     }
 
@@ -48,6 +59,10 @@ public class PropertyClasspathBackend extends PropertyBackend {
             if (rootBundle != null) {
                 log.debug("root bundle " + sourceName + " found");
                 properties.load(rootBundle);
+            }
+            if (override != null) {
+            	log.debug("applying override properties");
+            	properties.putAll(override);
             }
             cleanup();
             if (log.isDebugEnabled() && !properties.isEmpty()) {

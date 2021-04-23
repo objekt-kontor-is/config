@@ -1,5 +1,9 @@
 package de.objektkontor.config.backend;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -96,6 +100,14 @@ public abstract class PropertyBackend extends AbstractConfigBackend {
             if (value != null && (value.isEmpty() || value.matches("\\s+"))) {
 				i.remove();
 			}
+        }
+    }
+
+    public static Properties loadProperties(File file) throws IOException {
+    	Properties result = new Properties();
+        try (InputStream in = new FileInputStream(file)) {
+        	result.load(in);
+        	return result;
         }
     }
 }
