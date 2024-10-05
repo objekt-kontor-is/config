@@ -4,6 +4,7 @@ import static java.lang.String.format;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,8 +75,8 @@ public class ConfigInspector {
     protected static <C> C newInstanceOfSameType(C source) {
         Class<?> type = source.getClass();
         try {
-            return (C) type.newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
+            return (C) type.getDeclaredConstructor().newInstance();
+        } catch (IllegalAccessException | InstantiationException  | InvocationTargetException | NoSuchMethodException e) {
             throw new IllegalArgumentException("Error creating instance of type: " + type, e);
         }
     }
@@ -83,8 +84,8 @@ public class ConfigInspector {
 	protected static Object newFieldInstance(Field field, Class<?> exactType) {
 		Class<?> type = exactType == null ? field.getType() : exactType;
 		try {
-			return type.newInstance();
-		} catch (IllegalAccessException | InstantiationException e) {
+			return type.getDeclaredConstructor().newInstance();
+		} catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
 			throw new IllegalArgumentException("Error creating instance of configuration parameter: " + field);
 		}
 	}

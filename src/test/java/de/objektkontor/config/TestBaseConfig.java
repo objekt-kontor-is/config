@@ -72,12 +72,12 @@ public class TestBaseConfig extends ObservableConfig {
         setBooleanValues(new Boolean[] { Boolean.TRUE, Boolean.FALSE });
         setBooleanPrimitiveValue(true);
         setBooleanPrimitiveValues(new boolean[] { true, false });
-        setIntegerValue(new Integer(1));
-        setIntegerValues(new Integer[] { new Integer(1), new Integer(2) });
+        setIntegerValue(Integer.valueOf(1));
+        setIntegerValues(new Integer[] { Integer.valueOf(1), Integer.valueOf(2) });
         setIntegerPrimitiveValue(1);
         setIntegerPrimitiveValues(new int[] { 1, 2 });
-        setLongValue(new Long(1));
-        setLongValues(new Long[] { new Long(1), new Long(2) });
+        setLongValue(Long.valueOf(1));
+        setLongValues(new Long[] { Long.valueOf(1), Long.valueOf(2) });
         setLongPrimitiveValue(1);
         setLongPrimitiveValues(new long[] { 1, 2 });
         setDateValue(createTestDate(11, 1, 2011));
