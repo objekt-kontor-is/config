@@ -2,9 +2,9 @@ package de.objektkontor.config;
 
 public interface ConfigUpdate {
 
-    public abstract void prepare() throws Exception;
+    void prepare() throws Exception;
 
-    public abstract void apply();
+    void apply() throws Exception;
 
-    public abstract void discard();
+    void discard() throws Exception;
 }

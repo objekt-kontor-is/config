@@ -1,17 +1,17 @@
 package de.objektkontor.config;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.eq;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.Date;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.objektkontor.config.annotation.ConfigParameter;
 import de.objektkontor.config.backend.PropertyBackend;
@@ -22,7 +22,7 @@ public class ConfigLoaderTest {
 	private static PropertyBackend configBackend;
 	private static ConfigLoader loader;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws Exception {
 		configBackend = new PropertyClasspathBackend("configloader");
 		loader = new ConfigLoader(configBackend);
@@ -33,8 +33,8 @@ public class ConfigLoaderTest {
 		TestConfig config = loader.loadConfig(new TestConfig());
 		assertEquals("value", config.getStringValue());
 		assertEquals(Boolean.TRUE, config.getBooleanValue());
-		assertEquals(new Integer(1), config.getIntegerValue());
-		assertEquals(new Long(2), config.getLongValue());
+		assertEquals(Integer.valueOf(1), config.getIntegerValue());
+		assertEquals(Long.valueOf(2), config.getLongValue());
 		assertEquals(TestBaseConfig.createTestDate(21, 11, 2014), config.getDateValue());
 		assertEquals(TestEnum.B, config.getEnumValue());
 	}
@@ -115,7 +115,7 @@ public class ConfigLoaderTest {
 
 		trackingLoader.bundleChanged();
 
-		verify(observer).reconfigure(eq(origConfig), anyListOf(ConfigUpdate.class));
+		verify(observer).reconfigure(eq(origConfig), anyList());
 	}
 
 	public static class DefaultValueTestConfig {

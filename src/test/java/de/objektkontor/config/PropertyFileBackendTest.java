@@ -1,15 +1,15 @@
 package de.objektkontor.config;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.objektkontor.config.backend.PropertyBackend;
 import de.objektkontor.config.backend.PropertyFileBackend;
@@ -18,7 +18,7 @@ public class PropertyFileBackendTest {
 
 	private static PropertyBackend propertyBackend;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() throws Exception {
 		File file = File.createTempFile("test", "properties");
 		try {

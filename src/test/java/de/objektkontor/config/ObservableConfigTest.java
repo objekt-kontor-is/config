@@ -1,23 +1,23 @@
 package de.objektkontor.config;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ObservableConfigTest {
 
     @Mock
@@ -28,7 +28,7 @@ public class ObservableConfigTest {
     private TestConfig config;
     private TestConfig clone;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         config = new TestConfig().fill();
         clone = ConfigDuplicator.cloneConfig(config);
@@ -58,7 +58,7 @@ public class ObservableConfigTest {
     public void testObserverNotNotifiedForEqualConfig() throws Exception {
         config.setObserver(observer);
         config.notifyObserver(clone, updates);
-        verify(observer, never()).reconfigure(any(TestConfig.class), anyListOf(ConfigUpdate.class));
+        verify(observer, never()).reconfigure(any(TestConfig.class), anyList());
     }
 
     @Test
@@ -82,6 +82,6 @@ public class ObservableConfigTest {
         config.setObserver(observer);
         config.getSubConfig().setStringValue("different");
         config.notifyObserver(clone, updates);
-        verify(observer, never()).reconfigure(any(TestConfig.class), anyListOf(ConfigUpdate.class));
+        verify(observer, never()).reconfigure(any(TestConfig.class), anyList());
     }
 }

@@ -1,10 +1,10 @@
 package de.objektkontor.config.common;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.objektkontor.config.common.smtp.AuthConfig;
 import de.objektkontor.config.common.smtp.HttpProxyConfig;

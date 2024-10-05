@@ -1,11 +1,12 @@
 package de.objektkontor.config;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import de.objektkontor.config.backend.PropertyBackend;
 import de.objektkontor.config.backend.PropertyClasspathBackend;
@@ -14,7 +15,7 @@ public class PropertyClasspathBackendTest {
 
     private static PropertyBackend propertyBackend;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
     	propertyBackend = new PropertyClasspathBackend("testbundle");
     }
